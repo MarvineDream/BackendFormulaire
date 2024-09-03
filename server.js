@@ -1,10 +1,12 @@
 import express from 'express';
 import inviteRoutes from './routes/invite.route.js';
-import cors from 'cors'
+import cors from 'cors';
+import db from '../Backend/config/db.js';
 
 
 const app = express();
 app.use(cors());
+db();
 
 const PORT = process.env.PORT || 3004;
 
@@ -30,7 +32,7 @@ app.use((req, res, next) => {
 
 //Middleware qui traite les données de la requeste
 app.use(express.json());
-app.use(express.urlencoded( {extended: false}));
+app.use(express.urlencoded( {extended: true}));
 
 
 //Middleware qui conduit a la route Invite
