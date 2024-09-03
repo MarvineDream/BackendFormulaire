@@ -6,7 +6,10 @@ const invitationSchema = new mongoose.Schema({
     prenom: { type: String, required: true },
     quartier: { type: String, required: true },
     telephone: { type: String, required: true },
-    email: { type: String, required: true }
+    email: { type: String, required: true },
+    reponse: { type: String }
+}, {
+    timestamps: true 
 });
 
 // Créer le modèle

@@ -37,6 +37,9 @@ app.use(express.urlencoded( {extended: true}));
 
 //Middleware qui conduit a la route Invite
 app.use("/submit", inviteRoutes);
+app.use("/reponse", (req, res) => {
+    res.json({ message: "Voici la page pour votre reponse !"});
+});
 
 
 app.listen(PORT, () => {

@@ -1,5 +1,21 @@
 import Invitation from '../model/inviteModel.js';
-import { insertRenseignements } from '../model/inviteModel.js';
+import nodemailer from 'nodemailer';
+import dotenv from 'dotenv';
+
+
+
+dotenv.config();
+
+
+// Configuration du transporteur Nodemailer
+const transporter = nodemailer.createTransport({
+    service: 'gmail', // service de messagerie
+    auth: {
+        user: process.env.EMAIL_USER, // votre adresse email
+        pass: process.env.EMAIL_PASS // mot de passe d'application fourni par gmail
+    }
+});
+
 
 
 // Récuperation de tous les invités
@@ -25,12 +41,30 @@ export const submitInvite = async (req, res) => {
     try {
         const newInvitation = new Invitation({ nom, prenom, quartier, telephone, email });
         await newInvitation.save();
-        res.send('Données enregistrées avec succès !');
+
+        // Envoie de l'email
+        const mailOptions = {
+            from: 'votre_email@gmail.com', // votre adresse email
+            to: email,
+            subject: 'Invitation',
+            text: `Bonjour Mr/Mme ${prenom},\n\nVous avez été invité à participer a mon anniversaire. Acceptez-vous l'invitation ? Répondez par "oui" ou "non" en suivant le lien ci-apres !\n\n[Accepter](http://votre-domaine.com/reponse?inviteId=${newInvitation._id}&reponse=oui) | [Refuser](http://votre-domaine.com/reponse?inviteId=${newInvitation._id}&reponse=non)\n\nMerci!`
+        };
+
+        transporter.sendMail(mailOptions, (error, info) => {
+            if (error) {
+                console.error('Erreur lors de l\'envoi de l\'email:', error);
+                return res.status(500).send('Erreur lors de l\'envoi de l\'email.');
+            }
+            console.log('Email envoyé:', info.response);
+            res.send('Données enregistrées avec succès et email envoyé !');
+        });
+
     } catch (err) {
         console.error(err);
         res.status(500).send('Erreur lors de l\'enregistrement des données.');
     }
 };
+
 
 // Supprimer une invitation
 export const deleteInvitation = async (req, res) => {
